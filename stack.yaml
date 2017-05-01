@@ -3,7 +3,7 @@ extra-package-dbs: []
 packages:
 - location: '.'
 - location:
-    git: git@github.com:MarekSuchanek/hCM.git
+    git: https://github.com/MarekSuchanek/hCM.git
     commit: 8777f3c8f51a55c749f3c8263085e85bd62720cf
 extra-deps:
 - dates-0.2.2.1
