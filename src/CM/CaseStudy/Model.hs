@@ -131,62 +131,152 @@ crmESubjects CarRentalModel {..} = (map SubjectPerson crmEPeople)
                                 ++ (map SubjectCompany crmECompanies)
 
 instance ConceptualModel CarRentalModel where
-  cmodelElements CarRentalModel {..} = (map toMeta crmEPeople)
-                                    ++ (map toMeta crmECompanies)
-                                    ++ (map toMeta crmEAccounts)
-                                    ++ (map toMeta crmECClasses)
-                                    ++ (map toMeta crmEContracts)
-                                    ++ (map toMeta crmECars)
-                                    ++ (map toMeta crmECarModels)
-                                    ++ (map toMeta crmECarClasses)
-                                    ++ (map toMeta crmRRental)
-                                    ++ (map toMeta crmREmploying)
-                                    ++ (map toMeta crmRAccMember)
-                                    ++ (map toMeta crmRCarMember)
-                                    ++ (map toMeta crmRCarModel)
-                                    ++ (map toMeta crmRAccOwner)
+  cmodelElements model = (map (toMeta model) $ crmEPeople model)
+                      ++ (map (toMeta model) $ crmECompanies model)
+                      ++ (map (toMeta model) $ crmEAccounts model)
+                      ++ (map (toMeta model) $ crmECClasses model)
+                      ++ (map (toMeta model) $ crmEContracts model)
+                      ++ (map (toMeta model) $ crmECars model)
+                      ++ (map (toMeta model) $ crmECarModels model)
+                      ++ (map (toMeta model) $ crmECarClasses model)
+                      ++ (map (toMeta model) $ crmRRental model)
+                      ++ (map (toMeta model) $ crmREmploying model)
+                      ++ (map (toMeta model) $ crmRAccMember model)
+                      ++ (map (toMeta model) $ crmRCarMember model)
+                      ++ (map (toMeta model) $ crmRCarModel model)
+                      ++ (map (toMeta model) $ crmRAccOwner model)
 
 --------------------------------------------------------------------------------
 -- STEP 4: CDM = Compiler driven modeling (GHC guides thru the process)
 --------------------------------------------------------------------------------
 
 -- 4.1 Conceptual Model is also element
-instance CMElement CarRentalModel
+instance CMElement CarRentalModel where
+  toMeta = toMetaModel
 
 -- 4.2 Entites are elements and entities
-instance CMElement Person
-instance CMElement Company
-instance CMElement CustomerAccount
-instance CMElement CustomerClass
-instance CMElement RentalContract
-instance CMElement BranchOffice
-instance CMElement Car
-instance CMElement CarModel
-instance CMElement CarClass
-instance CMElement Rental
-instance CMElement IsEmployeeOf
-instance CMElement BelongsToCustomerClass
-instance CMElement BelongsToCarClass
-instance CMElement CarInstanceOfModel
-instance CMElement AccountOwnership
+instance CMElement Person where
+  toMeta = toMetaEntity
+instance CMElement Company where
+  toMeta = toMetaEntity
+instance CMElement CustomerAccount where
+  toMeta = toMetaEntity
+instance CMElement CustomerClass where
+  toMeta = toMetaEntity
+instance CMElement RentalContract where
+  toMeta = toMetaEntity
+instance CMElement BranchOffice where
+  toMeta = toMetaEntity
+instance CMElement Car where
+  toMeta = toMetaEntity
+instance CMElement CarModel where
+  toMeta = toMetaEntity
+instance CMElement CarClass where
+  toMeta = toMetaEntity
+instance CMElement Rental where
+  toMeta = toMetaRelationship
+instance CMElement IsEmployeeOf where
+  toMeta = toMetaRelationship
+instance CMElement BelongsToCustomerClass where
+  toMeta = toMetaRelationship
+instance CMElement BelongsToCarClass where
+  toMeta = toMetaRelationship
+instance CMElement CarInstanceOfModel where
+  toMeta = toMetaRelationship
+instance CMElement AccountOwnership where
+  toMeta = toMetaRelationship
 
 
-instance Entity Person
-instance Entity Company
-instance Entity CustomerAccount
-instance Entity CustomerClass
-instance Entity RentalContract
-instance Entity BranchOffice
-instance Entity Car
-instance Entity CarModel
-instance Entity CarClass
+instance Entity Person where
+  entityAttributes Person {..} = map tupleToAttribute
+    [ ("Personal ID", "String", personalId)
+    , ("Birthdate", "Date", show personBirth)
+    , ("Firstname", "String", personFirstname)
+    , ("Lastname", "String", personLastname)
+    , ("Home", "Address", show personHome)
+    , ("Gender", "Gender", show personGender)
+    ]
+instance Entity Company where
+  entityAttributes Company {..} = map tupleToAttribute
+    [ ("Company ID", "String", companyId)
+    , ("Name", "String", companyName)
+    , ("Scope", "String", companyScope)
+    , ("Form", "String", companyForm)
+    , ("Home", "Address", show companyHome)
+    ]
+instance Entity CustomerAccount where
+  entityAttributes CustomerAccount {..} = map tupleToAttribute
+    [ ("Account ID", "Int", show accountId)
+    , ("Founded", "DateTime", show accountFounded)
+    ]
+instance Entity CustomerClass where
+  entityAttributes CustomerClass {..} = map tupleToAttribute
+    [ ("Name", "String", customerClassName)
+    , ("Discount", "Int", show customerClassDiscount ++ "%")
+    ]
+instance Entity RentalContract where
+  entityAttributes RentalContract {..} = map tupleToAttribute
+    [ ("Since", "DateTime", show rentalContractSince)
+    , ("Until", "DateTime", show rentalContractUntil)
+    ]
+instance Entity BranchOffice where
+  entityAttributes BranchOffice {..} = map tupleToAttribute
+    [ ("branchOfficeAddress", "Address", show branchOfficeAddress)
+    ]
+instance Entity Car where
+  entityAttributes Car {..} = map tupleToAttribute
+    [ ("VIN", "String", carVIN)
+    , ("Numberplate", "String", carNumberPlate)
+    , ("Year Manufactured", "Int", show carYearManufactured)
+    , ("Color", "String", carColor)
+    ]
+instance Entity CarModel where
+  entityAttributes CarModel {..} = map tupleToAttribute
+    [ ("Name", "String", carModelName)
+    , ("Type", "String", carModelType)
+    , ("MaxSpeed", "Int", show carModelMaxSpeed)
+    , ("NumberOfDoors", "Int", show carModelNumberOfDoors)
+    ]
+instance Entity CarClass where
+  entityAttributes CarClass {..} = map tupleToAttribute
+    [ ("Name", "String", carClassName)
+    , ("Price (per day)", "Double", show carClassDayPrice)
+    ]
 
-instance Relationship Rental
-instance Relationship IsEmployeeOf
-instance Relationship BelongsToCustomerClass
-instance Relationship BelongsToCarClass
-instance Relationship CarInstanceOfModel
-instance Relationship AccountOwnership
+instance Relationship Rental where
+  relationshipParticipations Rental {..} = map tupleToParticipation
+    [ ("contract", "RentalContract", identifier contract, MandatoryUnique)
+    , ("renter", "CustomerAccount", identifier renter, Optional Unlimited)
+    , ("lessor", "Employee", identifier lessor,  Optional Unlimited)
+    , ("rentedCar", "Car", identifier rentedCar,  Optional Unlimited)
+    , ("rentedFrom", "BranchOffice", identifier rentedFrom,  Optional Unlimited)
+    , ("rentedTo", "BranchOffice", identifier rentedTo,  Optional Unlimited)
+    ]
+instance Relationship IsEmployeeOf where
+  relationshipParticipations IsEmployeeOf {..} = map tupleToParticipation
+    [ ("employer", "Company", identifier employer, Optional Unlimited)
+    , ("employee", "Person", identifier employee, Optional Unlimited)
+    ]
+instance Relationship BelongsToCustomerClass where
+  relationshipParticipations BelongsToCustomerClass {..} = map tupleToParticipation
+    [ ("customer (account)", "CustomerAccount", identifier accountMember, OptionalUnique)
+    , ("class", "CustomerClass", identifier itsCustomerClass, Optional Unlimited)
+    ]
+instance Relationship BelongsToCarClass where
+  relationshipParticipations BelongsToCarClass {..} = map tupleToParticipation
+    [ ("car", "CarModel", identifier carMember, MandatoryUnique)
+    , ("class", "CarClass", identifier itsCarClass, Optional Unlimited)
+    ]
+instance Relationship CarInstanceOfModel where
+  relationshipParticipations CarInstanceOfModel {..} = map tupleToParticipation
+    [ ("car", "Car", identifier carInstance, MandatoryUnique)
+    , ("model", "CarModel", identifier itsModel, Optional Unlimited)
+    ]
+instance Relationship AccountOwnership where
+  relationshipParticipations AccountOwnership {..} = map tupleToParticipation
+    [ ("owner", "Subject", identifier owner, OptionalUnique)
+    , ("account", "CustomerAccount", identifier itsAccount, MandatoryUnique)
+    ]
 
 instance Identifiable Person where
   identifier = show . personalId
@@ -211,3 +301,10 @@ instance Identifiable BelongsToCustomerClass
 instance Identifiable BelongsToCarClass
 instance Identifiable CarInstanceOfModel
 instance Identifiable AccountOwnership
+
+instance Identifiable Subject where
+  identifier (SubjectPerson  p) = identifier p
+  identifier (SubjectCompany c) = identifier c
+
+instance Identifiable Employee where
+  identifier (Employee p) = identifier p

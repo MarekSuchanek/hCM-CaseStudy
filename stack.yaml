@@ -4,7 +4,8 @@ packages:
 - location: '.'
 - location:
     git: https://github.com/MarekSuchanek/hCM.git
-    commit: 8777f3c8f51a55c749f3c8263085e85bd62720cf
+    commit: 356d7f3691fd86357b5722d16fbb396a04f0de69
+  extra-dep: true
 extra-deps:
 - dates-0.2.2.1
 resolver: lts-8.12
