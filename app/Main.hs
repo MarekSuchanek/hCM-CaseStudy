@@ -1,5 +1,9 @@
 module Main where
 
+import CM.CaseStudy.Instances.Manual as CSInstance
+import CM.Visualization
+
 main :: IO ()
 main = do
-  putStrLn "Nothing here (yet)"
+  --putStrLn . modelToDotInstance $ CSInstance.model
+  putStrLn . modelToDotModel $ CSInstance.model

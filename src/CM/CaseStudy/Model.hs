@@ -12,13 +12,6 @@ import CM.CaseStudy.Helpers
 --         with hierarchy/taxonomy as in real world
 --------------------------------------------------------------------------------
 
-
-data Address = Address { addressStreet   :: String
-                       , addressCity     :: String
-                       , addressPostcode :: String
-                       , addressCountry  :: String
-                       } deriving (Show, Read, Eq)
-
 data Company = Company { companyName  :: String
                        , companyId    :: String
                        , companyScope :: String
@@ -50,7 +43,7 @@ data CustomerClass = CustomerClass { customerClassDiscount :: Int
                                    } deriving (Show, Read, Eq)
 
 data RentalContract = RentalContract { rentalContractSince :: DateTime
-                                     , rentalContractUntil :: DateTime
+                                     , rentalContractUntil :: Maybe DateTime
                                      } deriving (Show, Read, Eq)
 
 data BranchOffice = BranchOffice { branchOfficeAddress :: Address
@@ -111,6 +104,8 @@ data AccountOwnership = AccountOwnership { owner      :: Subject
 
 data CarRentalModel = CarRentalModel { crmEPeople     :: [Person]
                                      , crmECompanies  :: [Company]
+                                     , crmESubjects   :: [Subject]
+                                     , crmEEmployees  :: [Employee]
                                      , crmEAccounts   :: [CustomerAccount]
                                      , crmECClasses   :: [CustomerClass]
                                      , crmEContracts  :: [RentalContract]
@@ -126,16 +121,15 @@ data CarRentalModel = CarRentalModel { crmEPeople     :: [Person]
                                      , crmRAccOwner   :: [AccountOwnership]
                                      } deriving (Show, Read, Eq)
 
-crmESubjects :: CarRentalModel -> [Subject]
-crmESubjects CarRentalModel {..} = (map SubjectPerson crmEPeople)
-                                ++ (map SubjectCompany crmECompanies)
-
 instance ConceptualModel CarRentalModel where
   cmodelElements model = (map (toMeta model) $ crmEPeople model)
                       ++ (map (toMeta model) $ crmECompanies model)
+                      ++ (map (toMeta model) $ crmESubjects model)
+                      ++ (map (toMeta model) $ crmEEmployees model)
                       ++ (map (toMeta model) $ crmEAccounts model)
                       ++ (map (toMeta model) $ crmECClasses model)
                       ++ (map (toMeta model) $ crmEContracts model)
+                      ++ (map (toMeta model) $ crmEBranches model)
                       ++ (map (toMeta model) $ crmECars model)
                       ++ (map (toMeta model) $ crmECarModels model)
                       ++ (map (toMeta model) $ crmECarClasses model)
@@ -159,6 +153,11 @@ instance CMElement Person where
   toMeta = toMetaEntity
 instance CMElement Company where
   toMeta = toMetaEntity
+instance CMElement Subject where
+  toMeta m (SubjectPerson  p) = toMetaEntity m p
+  toMeta m (SubjectCompany c) = toMetaEntity m c
+instance CMElement Employee where
+  toMeta m (Employee p) = toMetaEntity m p
 instance CMElement CustomerAccount where
   toMeta = toMetaEntity
 instance CMElement CustomerClass where
@@ -186,8 +185,10 @@ instance CMElement CarInstanceOfModel where
 instance CMElement AccountOwnership where
   toMeta = toMetaRelationship
 
-
+instance Entity Subject where
+  entityAttributes _ = []
 instance Entity Person where
+  entitySuperNames _ = ["Subject"]
   entityAttributes Person {..} = map tupleToAttribute
     [ ("Personal ID", "String", personalId)
     , ("Birthdate", "Date", show personBirth)
@@ -197,6 +198,7 @@ instance Entity Person where
     , ("Gender", "Gender", show personGender)
     ]
 instance Entity Company where
+  entitySuperNames _ = ["Subject"]
   entityAttributes Company {..} = map tupleToAttribute
     [ ("Company ID", "String", companyId)
     , ("Name", "String", companyName)
@@ -204,6 +206,9 @@ instance Entity Company where
     , ("Form", "String", companyForm)
     , ("Home", "Address", show companyHome)
     ]
+instance Entity Employee where
+  entitySuperNames _ = ["Person"]
+  entityAttributes _ = []
 instance Entity CustomerAccount where
   entityAttributes CustomerAccount {..} = map tupleToAttribute
     [ ("Account ID", "Int", show accountId)
