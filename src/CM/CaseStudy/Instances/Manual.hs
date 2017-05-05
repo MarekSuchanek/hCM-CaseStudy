@@ -29,10 +29,10 @@ companyACME = Company { companyName = "ACME"
                       }
 subjectACME = SubjectCompany companyACME
 
-bobsAccount = CustomerAccount { accountId = 2
+bobsAccount = CustomerAccount { accountId = 278
                               , accountFounded = tupleToDateTime (1, 4, 2017, 12, 00, 50)
                               }
-acmesAccount = CustomerAccount { accountId = 2
+acmesAccount = CustomerAccount { accountId = 987
                                , accountFounded = tupleToDateTime (23, 2, 2017, 12, 07, 47)
                                }
 bobHasAccount =  AccountOwnership { owner = subjectBob
@@ -75,7 +75,7 @@ carBMW2 = Car { carColor = "white"
               , carYearManufactured = 2008
               }
 carCamaro = Car { carColor = "black"
-                , carVIN = "STWJKMNW22366624"
+                , carVIN = "XXJKMNW2786624"
                 , carNumberPlate = "FTW 0000"
                 , carYearManufactured = 1969
                 }
