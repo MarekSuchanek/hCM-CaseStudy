@@ -191,10 +191,10 @@ instance Entity Person where
   entitySuperNames _ = ["Subject"]
   entityAttributes Person {..} = map tupleToAttribute
     [ ("Personal ID", "String", personalId)
-    , ("Birthdate", "Date", show personBirth)
+    , ("Birthdate", "Date", stdDateFormat personBirth)
     , ("Firstname", "String", personFirstname)
     , ("Lastname", "String", personLastname)
-    , ("Home", "Address", show personHome)
+    , ("Home", "Address", stdEnveloperAddressFormat $ personHome)
     , ("Gender", "Gender", show personGender)
     ]
 instance Entity Company where
@@ -204,7 +204,7 @@ instance Entity Company where
     , ("Name", "String", companyName)
     , ("Scope", "String", companyScope)
     , ("Form", "String", companyForm)
-    , ("Home", "Address", show companyHome)
+    , ("Home", "Address", stdEnveloperAddressFormat companyHome)
     ]
 instance Entity Employee where
   entitySuperNames _ = ["Person"]
@@ -212,7 +212,7 @@ instance Entity Employee where
 instance Entity CustomerAccount where
   entityAttributes CustomerAccount {..} = map tupleToAttribute
     [ ("Account ID", "Int", show accountId)
-    , ("Founded", "DateTime", show accountFounded)
+    , ("Founded", "DateTime", stdDateTimeFormat accountFounded)
     ]
 instance Entity CustomerClass where
   entityAttributes CustomerClass {..} = map tupleToAttribute
@@ -221,12 +221,12 @@ instance Entity CustomerClass where
     ]
 instance Entity RentalContract where
   entityAttributes RentalContract {..} = map tupleToAttribute
-    [ ("Since", "DateTime", show rentalContractSince)
-    , ("Until", "DateTime", show rentalContractUntil)
+    [ ("Since", "DateTime", stdDateTimeFormat rentalContractSince)
+    , ("Until", "DateTime", maybe "N/A" stdDateTimeFormat rentalContractUntil)
     ]
 instance Entity BranchOffice where
   entityAttributes BranchOffice {..} = map tupleToAttribute
-    [ ("branchOfficeAddress", "Address", show branchOfficeAddress)
+    [ ("branchOfficeAddress", "Address", stdEnveloperAddressFormat branchOfficeAddress)
     ]
 instance Entity Car where
   entityAttributes Car {..} = map tupleToAttribute
