@@ -226,21 +226,21 @@ instance Entity RentalContract where
     ]
 instance Entity BranchOffice where
   entityAttributes BranchOffice {..} = map tupleToAttribute
-    [ ("branchOfficeAddress", "Address", stdEnveloperAddressFormat branchOfficeAddress)
+    [ ("Address", "Address", stdEnveloperAddressFormat branchOfficeAddress)
     ]
 instance Entity Car where
   entityAttributes Car {..} = map tupleToAttribute
     [ ("VIN", "String", carVIN)
     , ("Numberplate", "String", carNumberPlate)
-    , ("Year Manufactured", "Int", show carYearManufactured)
+    , ("Year (manuf.)", "Int", show carYearManufactured)
     , ("Color", "String", carColor)
     ]
 instance Entity CarModel where
   entityAttributes CarModel {..} = map tupleToAttribute
     [ ("Name", "String", carModelName)
     , ("Type", "String", carModelType)
-    , ("MaxSpeed", "Int", show carModelMaxSpeed)
-    , ("NumberOfDoors", "Int", show carModelNumberOfDoors)
+    , ("Max. speed", "Int", show carModelMaxSpeed)
+    , ("#Doors", "Int", show carModelNumberOfDoors)
     ]
 instance Entity CarClass where
   entityAttributes CarClass {..} = map tupleToAttribute
@@ -250,7 +250,7 @@ instance Entity CarClass where
 
 instance Relationship Rental where
   relationshipParticipations Rental {..} = map tupleToParticipation
-    [ ("contract", "RentalContract", identifier contract, MandatoryUnique)
+    [ ("contract", "RentalContract", identifier contract, Mandatory Unique)
     , ("renter", "CustomerAccount", identifier renter, Optional Unlimited)
     , ("lessor", "Employee", identifier lessor,  Optional Unlimited)
     , ("rentedCar", "Car", identifier rentedCar,  Optional Unlimited)
@@ -264,23 +264,23 @@ instance Relationship IsEmployeeOf where
     ]
 instance Relationship BelongsToCustomerClass where
   relationshipParticipations BelongsToCustomerClass {..} = map tupleToParticipation
-    [ ("customer (account)", "CustomerAccount", identifier accountMember, OptionalUnique)
+    [ ("customer (account)", "CustomerAccount", identifier accountMember, Optional Unique)
     , ("class", "CustomerClass", identifier itsCustomerClass, Optional Unlimited)
     ]
 instance Relationship BelongsToCarClass where
   relationshipParticipations BelongsToCarClass {..} = map tupleToParticipation
-    [ ("car", "CarModel", identifier carMember, MandatoryUnique)
+    [ ("car", "CarModel", identifier carMember, Mandatory Unique)
     , ("class", "CarClass", identifier itsCarClass, Optional Unlimited)
     ]
 instance Relationship CarInstanceOfModel where
   relationshipParticipations CarInstanceOfModel {..} = map tupleToParticipation
-    [ ("car", "Car", identifier carInstance, MandatoryUnique)
+    [ ("car", "Car", identifier carInstance, Mandatory Unique)
     , ("model", "CarModel", identifier itsModel, Optional Unlimited)
     ]
 instance Relationship AccountOwnership where
   relationshipParticipations AccountOwnership {..} = map tupleToParticipation
-    [ ("owner", "Subject", identifier owner, OptionalUnique)
-    , ("account", "CustomerAccount", identifier itsAccount, MandatoryUnique)
+    [ ("owner", "Subject", identifier owner, Optional Unique)
+    , ("account", "CustomerAccount", identifier itsAccount, Mandatory Unique)
     ]
 
 instance Identifiable Person where

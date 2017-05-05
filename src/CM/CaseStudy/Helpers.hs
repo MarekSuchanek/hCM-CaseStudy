@@ -32,8 +32,8 @@ stdDateTimeFormat DateTime {..} = concat [d, "/", m, "/", y, " ", h, ":", i, ":"
         m = show dtMonth
         y = show dtYear
         h = show dtHour
-        i = show dtMinute
-        s = show dtSecond
+        i = if dtMinute > 9 then show dtMinute else '0' : show dtMinute
+        s = if dtSecond > 9 then show dtSecond else '0' : show dtSecond
 
 tupleToDate :: (Word, Word, Word) -> Date
 tupleToDate (d, m, y) = Date { dDay = d, dMonth = m, dYear = y }
