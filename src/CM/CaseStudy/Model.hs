@@ -31,8 +31,8 @@ data Subject = SubjectCompany Company
              | SubjectPerson Person
              deriving (Show, Read, Eq)
 
-data Employee = Employee Person
-              deriving (Show, Read, Eq)
+newtype Employee = Employee Person
+                 deriving (Show, Read, Eq)
 
 data CustomerAccount = CustomerAccount { accountId      :: Int
                                        , accountFounded :: DateTime
@@ -194,7 +194,7 @@ instance Entity Person where
     , ("Birthdate", "Date", stdDateFormat personBirth)
     , ("Firstname", "String", personFirstname)
     , ("Lastname", "String", personLastname)
-    , ("Home", "Address", stdEnveloperAddressFormat $ personHome)
+    , ("Home", "Address", stdEnveloperAddressFormat personHome)
     , ("Gender", "Gender", show personGender)
     ]
 instance Entity Company where
@@ -284,9 +284,9 @@ instance Relationship AccountOwnership where
     ]
 
 instance Identifiable Person where
-  identifier = show . personalId
+  identifier = personalId
 instance Identifiable Company where
-  identifier = show . companyId
+  identifier = companyId
 instance Identifiable CustomerAccount where
   identifier = show . accountId
 instance Identifiable CustomerClass where
