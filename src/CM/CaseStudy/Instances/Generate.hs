@@ -16,11 +16,6 @@ instance Arbitrary Gender where
     isMale <- arbitrary
     return $ if isMale then Male else Female
 
-daysOfMonth m
-          | m == 2 = 28
-          | m `elem` [1,3,5,7,8,10,12] = 31
-          | otherwise = 30
-
 instance Arbitrary Date where
   arbitrary = do
     y <- choose (1950, 2020)
@@ -170,6 +165,8 @@ instance Arbitrary CarClass where
 unifySubjects :: [Person] -> [Company] -> [Subject]
 unifySubjects ps cs = (map SubjectPerson ps) ++ (map SubjectCompany cs)
 
+-- in this scenario for validation mainly entities, but also account ownership,
+-- no other relations for initial validation (next iteration)
 instance Arbitrary CarRentalModel where
   arbitrary = do
     modelSize <- choose (2, 10)
@@ -200,8 +197,15 @@ instance Arbitrary CarRentalModel where
                           , crmRAccMember = []
                           , crmRCarMember = []
                           , crmRCarModel = []
-                          , crmRAccOwner = []
+                          , crmRAccOwner = createAccountMembership people accounts
                           }
+
+-- create helper functions for forming some relationships
+createAccountMembership :: [Person] -> [CustomerAccount] -> [AccountOwnership]
+createAccountMembership _ [] = []
+createAccountMembership [] _ = []
+createAccountMembership ps as = x : createAccountMembership (tail ps) (tail as)
+  where x = AccountOwnership { owner = SubjectPerson $ head ps, itsAccount = head as }
 
 --------------------------------------------------------------------------------
 -- STEP 3: Validation via generating instances - write some helper functions or

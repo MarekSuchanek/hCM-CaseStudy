@@ -22,6 +22,28 @@ data DateTime = DateTime { dtYear   :: Word
 
 dummyCurrentDate = tupleToDate(1, 5, 2017)
 
+daysOfMonth :: Word -> Word
+daysOfMonth m
+      | m == 2 = 28
+      | m `elem` [1,3,5,7,8,10,12] = 31
+      | otherwise = 30
+
+daysBetween :: Date -> Date -> Word
+daysBetween d1 d2
+   | d1 == d2  = 0
+   | d1 <  d2  = -1 * daysBetween d2 d1
+   | otherwise = 1 + daysBetween d1 (addDayTo d2)
+     where addDayTo Date {..} = if dDay == daysOfMonth dMonth then
+                                  if dMonth == 12 then tupleToDate(1, 1, dYear + 1)
+                                  else tupleToDate(1, dMonth + 1, dYear)
+                                else tupleToDate(dDay + 1, dMonth, dYear)
+
+daysBetweenDt :: DateTime -> DateTime -> Word
+daysBetweenDt dt1 dt2 = daysBetween (dateToDateTime dt1) (dateToDateTime dt2)
+
+dateToDateTime :: DateTime -> Date
+dateToDateTime DateTime {..} = Date { dYear = dtYear, dMonth = dtMonth, dDay = dtDay }
+
 dateInPast :: Date -> Bool
 dateInPast = (< dummyCurrentDate)
 

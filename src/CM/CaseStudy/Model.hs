@@ -1,6 +1,8 @@
 {-# LANGUAGE RecordWildCards #-}
 module CM.CaseStudy.Model where
 
+import Data.Maybe
+
 import CM.Metamodel
 import CM.Helpers
 import CM.CaseStudy.Helpers
@@ -345,3 +347,29 @@ personBirthInPast Person {..} =
 --------------------------------------------------------------------------------
 -- STEP 5: For validation go to CM.CaseStudy.Instances.Generate
 --------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+-- STEP 6: Model whatever behavior the implementation needs, basically it is
+--         any (pure) function which works with the model or its parts
+--------------------------------------------------------------------------------
+
+rentalBaseCost :: CarRentalModel -> Rental -> Double
+rentalBaseCost model Rental {..} = price - discount
+  where discount = ((fromIntegral discountPercentage :: Double) / 100.0) * price
+        price = dayPrice * fromIntegral days
+        days = 1 + daysBetweenDt dateSince dateUntil
+        dateUntil = fromMaybe dateSince $ rentalContractUntil contract
+        dateSince = rentalContractSince contract
+        dayPrice = maybe 0 carClassDayPrice $ findCarClassForCar model rentedCar
+        discountPercentage = maybe 0 customerClassDiscount $ findCustomerClassForAccount model renter
+
+
+-- Free implementation of model container -> own lookup functions as needed
+findCarClassForCar :: CarRentalModel -> Car -> Maybe CarClass
+findCarClassForCar m c = if null carModels || null carClasses then Nothing else Just (head carClasses)
+  where carClasses = if null carModels then [] else map itsCarClass . filter (\x -> identifier (head carModels) == identifier (carMember x)) $ crmRCarMember m
+        carModels = map itsModel . filter (\x -> identifier c == identifier (carInstance x)) $ crmRCarModel m
+
+findCustomerClassForAccount :: CarRentalModel -> CustomerAccount -> Maybe CustomerClass
+findCustomerClassForAccount m c = if null customerClasses then Nothing else Just (head customerClasses)
+  where customerClasses = map itsCustomerClass . filter (\x -> identifier c == identifier (accountMember x)) $ crmRAccMember m
