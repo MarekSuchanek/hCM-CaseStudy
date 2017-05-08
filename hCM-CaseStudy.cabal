@@ -15,7 +15,10 @@ library
   hs-source-dirs:      src
   exposed-modules:     CM.CaseStudy.Model
                      , CM.CaseStudy.Instances.Manual
+                     , CM.CaseStudy.Instances.Generate
+                     , CM.CaseStudy.Instances.GeneratedPeople
   other-modules:       CM.CaseStudy.Helpers
+                     , CM.CaseStudy.Instances.Values
   build-depends:       base >= 4.7 && < 5
                      , hCM
                      , QuickCheck

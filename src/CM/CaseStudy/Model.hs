@@ -2,6 +2,7 @@
 module CM.CaseStudy.Model where
 
 import CM.Metamodel
+import CM.Helpers
 import CM.CaseStudy.Helpers
 
 --------------------------------------------------------------------------------
@@ -121,6 +122,25 @@ data CarRentalModel = CarRentalModel { crmEPeople     :: [Person]
                                      , crmRAccOwner   :: [AccountOwnership]
                                      } deriving (Show, Read, Eq)
 
+emptyCarRentalModel = CarRentalModel { crmEPeople     = []
+                                     , crmECompanies  = []
+                                     , crmESubjects   = []
+                                     , crmEEmployees  = []
+                                     , crmEAccounts   = []
+                                     , crmECClasses   = []
+                                     , crmEContracts  = []
+                                     , crmEBranches   = []
+                                     , crmECars       = []
+                                     , crmECarModels  = []
+                                     , crmECarClasses = []
+                                     , crmRRental     = []
+                                     , crmREmploying  = []
+                                     , crmRAccMember  = []
+                                     , crmRCarMember  = []
+                                     , crmRCarModel   = []
+                                     , crmRAccOwner   = []
+                                     }
+
 instance ConceptualModel CarRentalModel where
   cmodelElements model = (map (toMeta model) $ crmEPeople model)
                       ++ (map (toMeta model) $ crmECompanies model)
@@ -150,6 +170,7 @@ instance CMElement CarRentalModel where
 
 -- 4.2 Entites are elements and entities
 instance CMElement Person where
+  simpleConstraints = [personBirthInPast]
   toMeta = toMetaEntity
 instance CMElement Company where
   toMeta = toMetaEntity
@@ -313,3 +334,14 @@ instance Identifiable Subject where
 
 instance Identifiable Employee where
   identifier (Employee p) = identifier p
+
+-- Optional: implement some constraints for entities and relationships
+personBirthInPast :: Person -> Validity
+personBirthInPast Person {..} =
+  newConstraint (dateInPast personBirth) "Person birth must occur in past"
+
+-- Optional: implement some helper function as needed
+
+--------------------------------------------------------------------------------
+-- STEP 5: For validation go to CM.CaseStudy.Instances.Generate
+--------------------------------------------------------------------------------

@@ -7,18 +7,23 @@ data Gender = Male
             | Female
             deriving (Show, Read, Eq)
 
-data Date = Date { dDay :: Word
+data Date = Date { dYear :: Word
                  , dMonth :: Word
-                 , dYear :: Word
-                 } deriving (Show, Read, Eq)
+                 , dDay :: Word
+                 } deriving (Show, Read, Eq, Ord)
 
-data DateTime = DateTime { dtDay    :: Word
+data DateTime = DateTime { dtYear   :: Word
                          , dtMonth  :: Word
-                         , dtYear   :: Word
+                         , dtDay    :: Word
                          , dtHour   :: Word
                          , dtMinute :: Word
                          , dtSecond :: Word
-                         } deriving (Show, Read, Eq)
+                         } deriving (Show, Read, Eq, Ord)
+
+dummyCurrentDate = tupleToDate(1, 5, 2017)
+
+dateInPast :: Date -> Bool
+dateInPast = (< dummyCurrentDate)
 
 stdDateFormat :: Date -> String
 stdDateFormat Date {..} = concat [d, "/", m, "/", y]
